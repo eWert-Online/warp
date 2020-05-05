@@ -33,16 +33,16 @@ Then add `@space-labs/hermes` as a dependency to `bsconfig.json`:
 ### Example
 
 ```reason
-Hermes.get("http://localhost:8081/")
-->Hermes.setQueryString([
+Hermes.Method.get("http://localhost:8081/")
+->Hermes.ResponseType.setJson
+->Hermes.QueryString.set([
     ("firstname", "Max"),
     ("lastname", "Mustermann"),
     ("username", "max"),
     ("email", "max@mustermann.de"),
   ])
-->Hermes.setHeaders([("authorization", "Bearer 123")])
-->Hermes.setResponseTypeJSON
-->Hermes.onLoad(response => {
+->Hermes.Header.add("authorization", "Bearer 123")
+->Hermes.Event.onLoad(response => {
     switch (response) {
     | Ok(Some(data)) => Js.Console.log(data)
     | Ok(None) => Js.Console.info("No Response!")

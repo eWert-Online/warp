@@ -1,161 +1,15 @@
-type method =
-  | GET
-  | POST
-  | PUT
-  | PATCH
-  | DELETE
-  | HEAD
-  | OPTIONS;
-
-type responseType('a) =
-  | ArrayBufferResponse(option(Js.Typed_array.array_buffer))
-    : responseType(option(Js.Typed_array.array_buffer))
-  | DocumentResponse(option(Dom.document))
-    : responseType(option(Dom.document))
-  | JSONResponse(option(Js.Json.t)): responseType(option(Js.Json.t))
-  | TextResponse(option(string)): responseType(option(string));
-
-type response('a) =
-  | Error(string)
-  | Ok('a);
-
-type t('a) = {
-  url: string,
-  method,
-  queryString: list((string, string)),
-  formData: list((string, string)),
-  headers: list((string, string)),
-  response: 'a,
-  onLoad: response('a) => unit,
-};
-
-let make = (~url, ~method) => {
-  {
-    url,
-    method,
-    queryString: [],
-    response: TextResponse(None),
-    onLoad: _response => (),
-    formData: [],
-    headers: [],
-  };
-};
-
-/* ================= METHODS =============== */
-let get = (url: string) => {
-  make(~url, ~method=GET);
-};
-
-let post = (url: string) => {
-  make(~url, ~method=POST);
-};
-
-let put = (url: string) => {
-  make(~url, ~method=PUT);
-};
-
-let patch = (url: string) => {
-  make(~url, ~method=PATCH);
-};
-
-let delete = (url: string) => {
-  make(~url, ~method=DELETE);
-};
-
-let head = (url: string) => {
-  make(~url, ~method=HEAD);
-};
-
-let options = (url: string) => {
-  make(~url, ~method=OPTIONS);
-};
-
-/* ================= HEADERS =============== */
-let addHeader = (client, header) => {
-  {...client, headers: [header, ...client.headers]};
-};
-
-let setHeaders = (client, headers) => {
-  {...client, headers};
-};
-
-let removeHeader = (client, headerToRemove) => {
-  {
-    ...client,
-    headers:
-      Belt.List.keep(
-        client.headers,
-        header => {
-          let (key, _value) = header;
-          key !== headerToRemove;
-        },
-      ),
-  };
-};
-
-/* ================= DATA =============== */
-let addQueryString = (client, queryString) => {
-  {...client, queryString: [queryString, ...client.queryString]};
-};
-
-let setQueryString = (client, queryString) => {
-  {...client, queryString};
-};
-
-let removeQueryString = (client, keyToRemove) => {
-  {
-    ...client,
-    headers:
-      Belt.List.keep(
-        client.headers,
-        header => {
-          let (key, _value) = header;
-          key !== keyToRemove;
-        },
-      ),
-  };
-};
-
-/* ================= RESPONSE TYPES =============== */
-let setResponseTypeText = client => {
-  {...client, response: TextResponse(None), onLoad: _ => ()};
-};
-
-let setResponseTypeDocument = client => {
-  {...client, response: DocumentResponse(None), onLoad: _ => ()};
-};
-
-let setResponseTypeJSON = client => {
-  {...client, response: JSONResponse(None), onLoad: _ => ()};
-};
-
-let setResponseTypeArrayBuffer = client => {
-  {...client, response: ArrayBufferResponse(None), onLoad: _ => ()};
-};
+module Client = Hermes_Client;
+module Event = Hermes_Event;
+module Header = Hermes_Header;
+module Method = Hermes_Method;
+module QueryString = Hermes_QueryString;
+module ResponseType = Hermes_ResponseType;
+module Types = Hermes_Types;
 
 /* ================= FINISHERS =============== */
-let onLoad:
-  type a. (t(responseType(a)), response(a) => unit) => t(responseType(a)) =
-  (client, callback) => {
-    let eval: type a. responseType(a) => a =
-      fun
-      | ArrayBufferResponse(b) => b
-      | DocumentResponse(d) => d
-      | JSONResponse(j) => j
-      | TextResponse(t) => t;
-
-    {
-      ...client,
-      onLoad: data => {
-        switch (data) {
-        | Ok(data) => callback(Ok(eval(data)))
-        | Error(message) => callback(Error(message))
-        };
-      },
-    };
-  };
-
-let send: type a. t(responseType(a)) => option(unit => unit) =
+let send:
+  type a.
+    Types.Client.t(Types.ResponseType.payload(a)) => option(unit => unit) =
   client => {
     let xhr = Hermes_XHR.make();
 
@@ -201,44 +55,52 @@ let send: type a. t(responseType(a)) => option(unit => unit) =
     });
 
     xhr->Hermes_XHR.addEventListener(
-      `error(_ => {client.onLoad(Error(xhr->Hermes_XHR.statusText))}),
+      `error(
+        _ => {
+          client.onLoad(Types.ResponseType.Error(xhr->Hermes_XHR.statusText))
+        },
+      ),
     );
     xhr->Hermes_XHR.addEventListener(
-      `timeout(_ => {client.onLoad(Error(xhr->Hermes_XHR.statusText))}),
+      `timeout(
+        _ => {
+          client.onLoad(Types.ResponseType.Error(xhr->Hermes_XHR.statusText))
+        },
+      ),
     );
 
     xhr->Hermes_XHR.addEventListener(
       `load(
         _ => {
           switch (client.response) {
-          | TextResponse(_) =>
+          | Types.ResponseType.TextResponse(_) =>
             client.onLoad(
-              Ok(
-                TextResponse(
+              Types.ResponseType.Ok(
+                Types.ResponseType.TextResponse(
                   xhr->Hermes_XHR.responseText->Js.Nullable.toOption,
                 ),
               ),
             )
-          | JSONResponse(_) =>
+          | Types.ResponseType.JSONResponse(_) =>
             client.onLoad(
-              Ok(
-                JSONResponse(
+              Types.ResponseType.Ok(
+                Types.ResponseType.JSONResponse(
                   xhr->Hermes_XHR.responseJson->Js.Nullable.toOption,
                 ),
               ),
             )
-          | DocumentResponse(_) =>
+          | Types.ResponseType.DocumentResponse(_) =>
             client.onLoad(
-              Ok(
-                DocumentResponse(
+              Types.ResponseType.Ok(
+                Types.ResponseType.DocumentResponse(
                   xhr->Hermes_XHR.responseDocument->Js.Nullable.toOption,
                 ),
               ),
             )
-          | ArrayBufferResponse(_) =>
+          | Types.ResponseType.ArrayBufferResponse(_) =>
             client.onLoad(
-              Ok(
-                ArrayBufferResponse(
+              Types.ResponseType.Ok(
+                Types.ResponseType.ArrayBufferResponse(
                   xhr->Hermes_XHR.responseArrayBuffer->Js.Nullable.toOption,
                 ),
               ),
