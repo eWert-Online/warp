@@ -1,0 +1,23 @@
+{
+  "name": "@space-labs/hermes",
+  "description": "Hermes is a Bucklescript library enabling http-requests over XMLHttpRequests",
+  "version": "0.0.1",
+  "scripts": {
+    "prepare": "npm run build",
+    "build": "bsb -clean-world && bsb -make-world",
+    "start": "bsb -clean-world && bsb -make-world -w",
+    "clean": "bsb -clean-world"
+  },
+  "keywords": [
+    "reason",
+    "bucklescript",
+    "xhr",
+    "request",
+    "ajax"
+  ],
+  "author": "Torben Ewert",
+  "license": "MIT",
+  "devDependencies": {
+    "bs-platform": "^7.2.2"
+  }
+}

@@ -1,0 +1,10 @@
+.vscode
+
+.DS_Store
+*.log
+node_modules
+
+# Bucklescript
+lib
+.merlin
+*.bs.js
