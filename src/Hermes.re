@@ -1,12 +1,37 @@
 module Client = Hermes_Client;
-module Event = Hermes_Event;
 module Header = Hermes_Header;
 module Method = Hermes_Method;
 module QueryString = Hermes_QueryString;
 module ResponseType = Hermes_ResponseType;
 module Types = Hermes_Types;
 
-/* ================= FINISHERS =============== */
+let onLoad:
+  type a.
+    (
+      Types.Client.t(Types.ResponseType.payload(a)),
+      Types.ResponseType.t(a) => unit
+    ) =>
+    Types.Client.t(Types.ResponseType.payload(a)) =
+  (client, callback) => {
+    let eval: type a. Types.ResponseType.payload(a) => a =
+      fun
+      | Types.ResponseType.ArrayBufferResponse(b) => b
+      | Types.ResponseType.DocumentResponse(d) => d
+      | Types.ResponseType.JSONResponse(j) => j
+      | Types.ResponseType.TextResponse(t) => t;
+
+    {
+      ...client,
+      onLoad: data => {
+        switch (data) {
+        | Hermes_Types_ResponseType.Ok(data) => callback(Ok(eval(data)))
+        | Hermes_Types_ResponseType.Error(message) =>
+          callback(Error(message))
+        };
+      },
+    };
+  };
+
 let send:
   type a.
     Types.Client.t(Types.ResponseType.payload(a)) => option(unit => unit) =
