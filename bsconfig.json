@@ -1,5 +1,5 @@
 {
-  "name": "@space-labs/request",
+  "name": "@space-labs/hermes",
   "version": "0.0.1",
   "reason": { "react-jsx": 3 },
   "bsc-flags": ["-bs-super-errors"],
