@@ -42,11 +42,12 @@ Hermes.get("http://localhost:8081/")
   ])
 ->Hermes.setHeaders([("authorization", "Bearer 123")])
 ->Hermes.setResponseTypeJSON
-->Hermes.send(response => {
+->Hermes.onLoad(response => {
     switch (response) {
     | Ok(Some(data)) => Js.Console.log(data)
     | Ok(None) => Js.Console.info("No Response!")
     | Error(message) => Js.Console.error(message)
     }
-  });
+  })
+->Hermes.send;
 ```

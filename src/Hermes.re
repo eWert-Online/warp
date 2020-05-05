@@ -26,6 +26,7 @@ type t('a) = {
   formData: list((string, string)),
   headers: list((string, string)),
   response: 'a,
+  onLoad: response('a) => unit,
 };
 
 let make = (~url, ~method) => {
@@ -34,6 +35,7 @@ let make = (~url, ~method) => {
     method,
     queryString: [],
     response: TextResponse(None),
+    onLoad: _response => (),
     formData: [],
     headers: [],
   };
@@ -116,24 +118,24 @@ let removeQueryString = (client, keyToRemove) => {
 
 /* ================= RESPONSE TYPES =============== */
 let setResponseTypeText = client => {
-  {...client, response: TextResponse(None)};
+  {...client, response: TextResponse(None), onLoad: _ => ()};
 };
 
 let setResponseTypeDocument = client => {
-  {...client, response: DocumentResponse(None)};
+  {...client, response: DocumentResponse(None), onLoad: _ => ()};
 };
 
 let setResponseTypeJSON = client => {
-  {...client, response: JSONResponse(None)};
+  {...client, response: JSONResponse(None), onLoad: _ => ()};
 };
 
 let setResponseTypeArrayBuffer = client => {
-  {...client, response: ArrayBufferResponse(None)};
+  {...client, response: ArrayBufferResponse(None), onLoad: _ => ()};
 };
 
 /* ================= FINISHERS =============== */
-let send:
-  type a. (t(responseType(a)), response(a) => unit) => option(unit => unit) =
+let onLoad:
+  type a. (t(responseType(a)), response(a) => unit) => t(responseType(a)) =
   (client, callback) => {
     let eval: type a. responseType(a) => a =
       fun
@@ -142,6 +144,19 @@ let send:
       | JSONResponse(j) => j
       | TextResponse(t) => t;
 
+    {
+      ...client,
+      onLoad: data => {
+        switch (data) {
+        | Ok(data) => callback(Ok(eval(data)))
+        | Error(message) => callback(Error(message))
+        };
+      },
+    };
+  };
+
+let send: type a. t(responseType(a)) => option(unit => unit) =
+  client => {
     let xhr = Hermes_XHR.make();
 
     let url =
@@ -186,10 +201,10 @@ let send:
     });
 
     xhr->Hermes_XHR.addEventListener(
-      `error(_ => {callback(Error(xhr->Hermes_XHR.statusText))}),
+      `error(_ => {client.onLoad(Error(xhr->Hermes_XHR.statusText))}),
     );
     xhr->Hermes_XHR.addEventListener(
-      `timeout(_ => {callback(Error(xhr->Hermes_XHR.statusText))}),
+      `timeout(_ => {client.onLoad(Error(xhr->Hermes_XHR.statusText))}),
     );
 
     xhr->Hermes_XHR.addEventListener(
@@ -197,42 +212,34 @@ let send:
         _ => {
           switch (client.response) {
           | TextResponse(_) =>
-            callback(
+            client.onLoad(
               Ok(
-                eval(
-                  TextResponse(
-                    xhr->Hermes_XHR.responseText->Js.Nullable.toOption,
-                  ),
+                TextResponse(
+                  xhr->Hermes_XHR.responseText->Js.Nullable.toOption,
                 ),
               ),
             )
           | JSONResponse(_) =>
-            callback(
+            client.onLoad(
               Ok(
-                eval(
-                  JSONResponse(
-                    xhr->Hermes_XHR.responseJson->Js.Nullable.toOption,
-                  ),
+                JSONResponse(
+                  xhr->Hermes_XHR.responseJson->Js.Nullable.toOption,
                 ),
               ),
             )
           | DocumentResponse(_) =>
-            callback(
+            client.onLoad(
               Ok(
-                eval(
-                  DocumentResponse(
-                    xhr->Hermes_XHR.responseDocument->Js.Nullable.toOption,
-                  ),
+                DocumentResponse(
+                  xhr->Hermes_XHR.responseDocument->Js.Nullable.toOption,
                 ),
               ),
             )
           | ArrayBufferResponse(_) =>
-            callback(
+            client.onLoad(
               Ok(
-                eval(
-                  ArrayBufferResponse(
-                    xhr->Hermes_XHR.responseArrayBuffer->Js.Nullable.toOption,
-                  ),
+                ArrayBufferResponse(
+                  xhr->Hermes_XHR.responseArrayBuffer->Js.Nullable.toOption,
                 ),
               ),
             )
