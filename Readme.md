@@ -172,7 +172,7 @@ client->Hermes.send;
 ### Cancelling Requests
 
 `Hermes.send` returns a function, with which you may cancel the current request. It has a signature of
-`option(unit => unit)`, so you dont't have to do anything when using it inside `React.useEffect`.
+`option(unit => unit)`, so you don't have to do anything when using it inside `React.useEffect`.
 
 ```reason
   /* React */
