@@ -6,7 +6,7 @@
 - [API](#api)
   - [Methods](#methods)
   - [Query Strings](#query-strings)
-  - [Form Data](#form-data-todo)
+  - [Form Data](#form-data)
   - [Headers](#headers)
   - [Response Types](#response-types)
   - [Sending a Request](#sending-a-request)
