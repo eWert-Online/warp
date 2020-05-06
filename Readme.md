@@ -24,6 +24,50 @@ This is still highly experimental and untested.
 
 Please do not use it in production yet.
 
+### TODOs:
+
+- [x] Url
+- [x] Methods
+  - [x] OPTIONS
+  - [x] GET
+  - [x] HEAD
+  - [x] POST
+  - [x] PUT
+  - [x] DELETE
+  - [x] TRACE
+  - [x] CONNECT
+- [x] Headers
+  - [x] set
+  - [x] add
+  - [x] delete
+- [x] Query Strings
+  - [x] set
+  - [x] add
+  - [x] delete
+- [ ] Form Data / Body
+  - [ ] set
+  - [ ] add
+  - [ ] delete
+- [x] Response Types
+  - [x] ArrayBuffer `Js.Typed_array.ArrayBuffer.t`
+  - [ ] Blob
+  - [x] Document `Dom.document`
+  - [x] Json `Js.Json.t`
+  - [x] Text `string`
+- [x] Events
+  - [x] `onLoad`
+  - [ ] `onProgress`
+  - [ ] `onAbort`
+- [x] send
+- [x] abort
+- [ ] async
+- [ ] overrideMimeType
+- [ ] timeout
+- [ ] auth (username / password)
+- [ ] withCredentials
+- [ ] upload
+- [ ] statusCode
+
 # How do I install it?
 
 ```
@@ -49,13 +93,14 @@ Then add `@space-labs/hermes` as a dependency to `bsconfig.json`:
 ### Methods
 
 ```reason
+Hermes.Method.options("https://domain.com/");
 Hermes.Method.get("https://domain.com/");
+Hermes.Method.head("https://domain.com/");
 Hermes.Method.post("https://domain.com/");
 Hermes.Method.put("https://domain.com/");
-Hermes.Method.patch("https://domain.com/");
 Hermes.Method.delete("https://domain.com/");
-Hermes.Method.head("https://domain.com/");
-Hermes.Method.options("https://domain.com/");
+Hermes.Method.trace("https://domain.com/");
+Hermes.Method.connect("https://domain.com/");
 ```
 
 ### Query Strings
