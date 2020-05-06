@@ -4,6 +4,5 @@ type t('a) = {
   queryString: list((string, string)),
   formData: list((string, string)),
   headers: list((string, string)),
-  response: 'a,
-  onLoad: Hermes_Types_ResponseType.t('a) => unit,
+  onLoad: option(Hermes_Types_ResponseType.t('a) => unit),
 };

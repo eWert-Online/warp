@@ -5,8 +5,7 @@ let make = (~url, ~method) => {
     url,
     method,
     queryString: [],
-    response: Hermes_Types_ResponseType.TextResponse(None),
-    onLoad: _response => (),
+    onLoad: None,
     formData: [],
     headers: [],
   };

@@ -22,13 +22,17 @@ let onLoad:
 
     {
       ...client,
-      onLoad: data => {
-        switch (data) {
-        | Hermes_Types_ResponseType.Ok(data) => callback(Ok(eval(data)))
-        | Hermes_Types_ResponseType.Error(message) =>
-          callback(Error(message))
-        };
-      },
+      onLoad:
+        Some(
+          data => {
+            switch (data) {
+            | Hermes_Types_ResponseType.Ok(data) =>
+              callback(Ok(eval(data)))
+            | Hermes_Types_ResponseType.Error(message) =>
+              callback(Error(message))
+            }
+          },
+        ),
     };
   };
 
@@ -80,61 +84,65 @@ let send:
       xhr->Hermes_XHR.setRequestHeader(key, value)
     });
 
-    xhr->Hermes_XHR.addEventListener(
-      `error(
-        _ => {
-          client.onLoad(Types.ResponseType.Error(xhr->Hermes_XHR.statusText))
-        },
-      ),
-    );
-    xhr->Hermes_XHR.addEventListener(
-      `timeout(
-        _ => {
-          client.onLoad(Types.ResponseType.Error(xhr->Hermes_XHR.statusText))
-        },
-      ),
-    );
+    switch (client.onLoad) {
+    | Some(onLoad) =>
+      xhr->Hermes_XHR.addEventListener(
+        `error(
+          _ => {
+            onLoad(Types.ResponseType.Error(xhr->Hermes_XHR.statusText))
+          },
+        ),
+      );
+      xhr->Hermes_XHR.addEventListener(
+        `timeout(
+          _ => {
+            onLoad(Types.ResponseType.Error(xhr->Hermes_XHR.statusText))
+          },
+        ),
+      );
 
-    xhr->Hermes_XHR.addEventListener(
-      `load(
-        _ => {
-          switch (client.response) {
-          | Types.ResponseType.TextResponse(_) =>
-            client.onLoad(
-              Types.ResponseType.Ok(
-                Types.ResponseType.TextResponse(
-                  xhr->Hermes_XHR.responseText->Js.Nullable.toOption,
+      xhr->Hermes_XHR.addEventListener(
+        `load(
+          _ => {
+            switch (client.responseType) {
+            | Types.ResponseType.TextResponse(_) =>
+              onLoad(
+                Types.ResponseType.Ok(
+                  Types.ResponseType.TextResponse(
+                    xhr->Hermes_XHR.responseText->Js.Nullable.toOption,
+                  ),
                 ),
-              ),
-            )
-          | Types.ResponseType.JSONResponse(_) =>
-            client.onLoad(
-              Types.ResponseType.Ok(
-                Types.ResponseType.JSONResponse(
-                  xhr->Hermes_XHR.responseJson->Js.Nullable.toOption,
+              )
+            | Types.ResponseType.JSONResponse(_) =>
+              onLoad(
+                Types.ResponseType.Ok(
+                  Types.ResponseType.JSONResponse(
+                    xhr->Hermes_XHR.responseJson->Js.Nullable.toOption,
+                  ),
                 ),
-              ),
-            )
-          | Types.ResponseType.DocumentResponse(_) =>
-            client.onLoad(
-              Types.ResponseType.Ok(
-                Types.ResponseType.DocumentResponse(
-                  xhr->Hermes_XHR.responseDocument->Js.Nullable.toOption,
+              )
+            | Types.ResponseType.DocumentResponse(_) =>
+              onLoad(
+                Types.ResponseType.Ok(
+                  Types.ResponseType.DocumentResponse(
+                    xhr->Hermes_XHR.responseDocument->Js.Nullable.toOption,
+                  ),
                 ),
-              ),
-            )
-          | Types.ResponseType.ArrayBufferResponse(_) =>
-            client.onLoad(
-              Types.ResponseType.Ok(
-                Types.ResponseType.ArrayBufferResponse(
-                  xhr->Hermes_XHR.responseArrayBuffer->Js.Nullable.toOption,
+              )
+            | Types.ResponseType.ArrayBufferResponse(_) =>
+              onLoad(
+                Types.ResponseType.Ok(
+                  Types.ResponseType.ArrayBufferResponse(
+                    xhr->Hermes_XHR.responseArrayBuffer->Js.Nullable.toOption,
+                  ),
                 ),
-              ),
-            )
-          }
-        },
-      ),
-    );
+              )
+            }
+          },
+        ),
+      );
+    | None => ()
+    };
 
     xhr->Hermes_XHR.send;
 
