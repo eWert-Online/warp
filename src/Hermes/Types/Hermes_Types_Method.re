@@ -1,8 +1,9 @@
 type t =
+  | OPTIONS
   | GET
+  | HEAD
   | POST
   | PUT
-  | PATCH
   | DELETE
-  | HEAD
-  | OPTIONS;
+  | TRACE
+  | CONNECT;

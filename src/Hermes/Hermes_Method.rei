@@ -1,4 +1,12 @@
+let options:
+  string =>
+  Hermes_Types_Client.t(Hermes_Types_ResponseType.payload(option(string)));
+
 let get:
+  string =>
+  Hermes_Types_Client.t(Hermes_Types_ResponseType.payload(option(string)));
+
+let head:
   string =>
   Hermes_Types_Client.t(Hermes_Types_ResponseType.payload(option(string)));
 
@@ -10,18 +18,14 @@ let put:
   string =>
   Hermes_Types_Client.t(Hermes_Types_ResponseType.payload(option(string)));
 
-let patch:
-  string =>
-  Hermes_Types_Client.t(Hermes_Types_ResponseType.payload(option(string)));
-
 let delete:
   string =>
   Hermes_Types_Client.t(Hermes_Types_ResponseType.payload(option(string)));
 
-let head:
+let trace:
   string =>
   Hermes_Types_Client.t(Hermes_Types_ResponseType.payload(option(string)));
 
-let options:
+let connect:
   string =>
   Hermes_Types_Client.t(Hermes_Types_ResponseType.payload(option(string)));
