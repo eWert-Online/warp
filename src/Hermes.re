@@ -2,6 +2,7 @@ module Client = Hermes_Client;
 module Header = Hermes_Header;
 module Method = Hermes_Method;
 module QueryString = Hermes_QueryString;
+module FormData = Hermes_FormData;
 module ResponseType = Hermes_ResponseType;
 module Types = Hermes_Types;
 
@@ -42,26 +43,23 @@ let send:
   client => {
     let xhr = Hermes_XHR.make();
 
+    let queryString =
+      Belt.List.map(client.queryString, ((key, value)) => {
+        key ++ "=" ++ value
+      })
+      ->Belt.List.toArray
+      ->Js.Array.joinWith("&", _);
+
+    let formData =
+      Belt.List.map(client.formData, ((key, value)) => {key ++ "=" ++ value})
+      ->Belt.List.toArray
+      ->Js.Array.joinWith("&", _);
+
     let url =
-      if (Belt.List.length(client.queryString) > 0) {
-        let hd = Belt.List.head(client.queryString);
-        let tl = Belt.List.tail(client.queryString);
-        switch (hd, tl) {
-        | (Some((fst_key, fst_val)), Some(tl)) =>
-          client.url
-          ++ "?"
-          ++ fst_key
-          ++ "="
-          ++ fst_val
-          ++ Belt.List.reduce(tl, "", (acc, (key, value)) =>
-               acc ++ "&" ++ key ++ "=" ++ value
-             )
-        | (Some((fst_key, fst_val)), None) =>
-          client.url ++ "?" ++ fst_key ++ "=" ++ fst_val
-        | _ => client.url
-        };
-      } else {
+      if (Js.List.isEmpty(client.queryString)) {
         client.url;
+      } else {
+        client.url ++ "?" ++ queryString;
       };
 
     xhr->Hermes_XHR.open_(
@@ -144,7 +142,15 @@ let send:
     | None => ()
     };
 
-    xhr->Hermes_XHR.send;
+    if (Js.List.isEmpty(client.formData)) {
+      xhr->Hermes_XHR.send;
+    } else {
+      xhr->Hermes_XHR.setRequestHeader(
+        "Content-type",
+        "application/x-www-form-urlencoded",
+      );
+      xhr->Hermes_XHR.sendString(formData);
+    };
 
     Some(() => {Hermes_XHR.abort(xhr)});
   };

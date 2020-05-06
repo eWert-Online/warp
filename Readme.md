@@ -44,10 +44,10 @@ Please do not use it in production yet.
   - [x] set
   - [x] add
   - [x] delete
-- [ ] Form Data / Body
-  - [ ] set
-  - [ ] add
-  - [ ] delete
+- [x] Form Data / Body
+  - [x] set
+  - [x] add
+  - [x] delete
 - [x] Response Types
   - [x] ArrayBuffer `Js.Typed_array.ArrayBuffer.t`
   - [ ] Blob
@@ -111,15 +111,12 @@ client->Hermes.QueryString.add("key", "value");
 client->Hermes.QueryString.remove("key");
 ```
 
-### Form Data (TODO)
+### Form Data
 
 ```reason
-/*
- Probably like this
  client->Hermes.FormData.set([("key", "value"), ("key2", "value2")]);
  client->Hermes.FormData.add("key", "value");
  client->Hermes.FormData.remove("key");
-*/
 ```
 
 ### Headers
