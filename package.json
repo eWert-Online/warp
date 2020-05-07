@@ -1,6 +1,6 @@
 {
-  "name": "@space-labs/hermes",
-  "description": "Hermes is a Bucklescript library enabling http-requests over XMLHttpRequests",
+  "name": "@space-labs/warp",
+  "description": "Warp is a Bucklescript library enabling http-requests over XHR",
   "version": "0.0.1",
   "scripts": {
     "prepare": "npm run build",

@@ -1,10 +1,10 @@
-module Client = Hermes_Client;
-module Header = Hermes_Header;
-module Method = Hermes_Method;
-module QueryString = Hermes_QueryString;
-module FormData = Hermes_FormData;
-module ResponseType = Hermes_ResponseType;
-module Types = Hermes_Types;
+module Client = Warp_Client;
+module Header = Warp_Header;
+module Method = Warp_Method;
+module QueryString = Warp_QueryString;
+module FormData = Warp_FormData;
+module ResponseType = Warp_ResponseType;
+module Types = Warp_Types;
 
 let onLoad:
   type a.
@@ -27,9 +27,8 @@ let onLoad:
         Some(
           data => {
             switch (data) {
-            | Hermes_Types_ResponseType.Ok(data) =>
-              callback(Ok(eval(data)))
-            | Hermes_Types_ResponseType.Error(message) =>
+            | Warp_Types_ResponseType.Ok(data) => callback(Ok(eval(data)))
+            | Warp_Types_ResponseType.Error(message) =>
               callback(Error(message))
             }
           },
@@ -41,7 +40,7 @@ let send:
   type a.
     Types.Client.t(Types.ResponseType.payload(a)) => option(unit => unit) =
   client => {
-    let xhr = Hermes_XHR.make();
+    let xhr = Warp_XHR.make();
 
     let queryString =
       Belt.List.map(client.queryString, ((key, value)) => {
@@ -62,7 +61,7 @@ let send:
         client.url ++ "?" ++ queryString;
       };
 
-    xhr->Hermes_XHR.open_(
+    xhr->Warp_XHR.open_(
       ~url,
       ~method=
         switch (client.method) {
@@ -79,27 +78,23 @@ let send:
     );
 
     Belt.List.forEach(client.headers, ((key, value)) => {
-      xhr->Hermes_XHR.setRequestHeader(key, value)
+      xhr->Warp_XHR.setRequestHeader(key, value)
     });
 
     switch (client.onLoad) {
     | Some(onLoad) =>
-      xhr->Hermes_XHR.addEventListener(
+      xhr->Warp_XHR.addEventListener(
         `error(
-          _ => {
-            onLoad(Types.ResponseType.Error(xhr->Hermes_XHR.statusText))
-          },
+          _ => {onLoad(Types.ResponseType.Error(xhr->Warp_XHR.statusText))},
         ),
       );
-      xhr->Hermes_XHR.addEventListener(
+      xhr->Warp_XHR.addEventListener(
         `timeout(
-          _ => {
-            onLoad(Types.ResponseType.Error(xhr->Hermes_XHR.statusText))
-          },
+          _ => {onLoad(Types.ResponseType.Error(xhr->Warp_XHR.statusText))},
         ),
       );
 
-      xhr->Hermes_XHR.addEventListener(
+      xhr->Warp_XHR.addEventListener(
         `load(
           _ => {
             switch (client.responseType) {
@@ -107,7 +102,7 @@ let send:
               onLoad(
                 Types.ResponseType.Ok(
                   Types.ResponseType.TextResponse(
-                    xhr->Hermes_XHR.responseText->Js.Nullable.toOption,
+                    xhr->Warp_XHR.responseText->Js.Nullable.toOption,
                   ),
                 ),
               )
@@ -115,7 +110,7 @@ let send:
               onLoad(
                 Types.ResponseType.Ok(
                   Types.ResponseType.JSONResponse(
-                    xhr->Hermes_XHR.responseJson->Js.Nullable.toOption,
+                    xhr->Warp_XHR.responseJson->Js.Nullable.toOption,
                   ),
                 ),
               )
@@ -123,7 +118,7 @@ let send:
               onLoad(
                 Types.ResponseType.Ok(
                   Types.ResponseType.DocumentResponse(
-                    xhr->Hermes_XHR.responseDocument->Js.Nullable.toOption,
+                    xhr->Warp_XHR.responseDocument->Js.Nullable.toOption,
                   ),
                 ),
               )
@@ -131,7 +126,7 @@ let send:
               onLoad(
                 Types.ResponseType.Ok(
                   Types.ResponseType.ArrayBufferResponse(
-                    xhr->Hermes_XHR.responseArrayBuffer->Js.Nullable.toOption,
+                    xhr->Warp_XHR.responseArrayBuffer->Js.Nullable.toOption,
                   ),
                 ),
               )
@@ -143,14 +138,14 @@ let send:
     };
 
     if (Js.List.isEmpty(client.formData)) {
-      xhr->Hermes_XHR.send;
+      xhr->Warp_XHR.send;
     } else {
-      xhr->Hermes_XHR.setRequestHeader(
+      xhr->Warp_XHR.setRequestHeader(
         "Content-type",
         "application/x-www-form-urlencoded",
       );
-      xhr->Hermes_XHR.sendString(formData);
+      xhr->Warp_XHR.sendString(formData);
     };
 
-    Some(() => {Hermes_XHR.abort(xhr)});
+    Some(() => {Warp_XHR.abort(xhr)});
   };

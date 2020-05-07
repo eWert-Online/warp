@@ -1,10 +1,10 @@
-module Client = Hermes_Client;
-module Header = Hermes_Header;
-module Method = Hermes_Method;
-module QueryString = Hermes_QueryString;
-module FormData = Hermes_FormData;
-module ResponseType = Hermes_ResponseType;
-module Types = Hermes_Types;
+module Client = Warp_Client;
+module Header = Warp_Header;
+module Method = Warp_Method;
+module QueryString = Warp_QueryString;
+module FormData = Warp_FormData;
+module ResponseType = Warp_ResponseType;
+module Types = Warp_Types;
 
 let onLoad:
   (

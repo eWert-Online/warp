@@ -16,7 +16,7 @@
 
 # What is it?
 
-Hermes (the name is subject to change) is a Bucklescript library enabling http-requests over XMLHttpRequests.
+Warp is a Bucklescript library enabling http-requests over XHR.
 
 # What state is it in?
 
@@ -71,20 +71,20 @@ Please do not use it in production yet.
 # How do I install it?
 
 ```
-yarn add @space-labs/hermes
+yarn add @space-labs/warp
 ```
 
 or
 
 ```
-npm install @space-labs/hermes --save
+npm install @space-labs/warp --save
 ```
 
-Then add `@space-labs/hermes` as a dependency to `bsconfig.json`:
+Then add `@space-labs/warp` as a dependency to `bsconfig.json`:
 
 ```diff
 "bs-dependencies": [
-+  "@space-labs/hermes"
++  "@space-labs/warp"
 ]
 ```
 
@@ -93,38 +93,38 @@ Then add `@space-labs/hermes` as a dependency to `bsconfig.json`:
 ### Methods
 
 ```reason
-Hermes.Method.options("https://domain.com/");
-Hermes.Method.get("https://domain.com/");
-Hermes.Method.head("https://domain.com/");
-Hermes.Method.post("https://domain.com/");
-Hermes.Method.put("https://domain.com/");
-Hermes.Method.delete("https://domain.com/");
-Hermes.Method.trace("https://domain.com/");
-Hermes.Method.connect("https://domain.com/");
+Warp.Method.options("https://domain.com/");
+Warp.Method.get("https://domain.com/");
+Warp.Method.head("https://domain.com/");
+Warp.Method.post("https://domain.com/");
+Warp.Method.put("https://domain.com/");
+Warp.Method.delete("https://domain.com/");
+Warp.Method.trace("https://domain.com/");
+Warp.Method.connect("https://domain.com/");
 ```
 
 ### Query Strings
 
 ```reason
-client->Hermes.QueryString.set([("key", "value"), ("key2", "value2")]);
-client->Hermes.QueryString.add("key", "value");
-client->Hermes.QueryString.remove("key");
+client->Warp.QueryString.set([("key", "value"), ("key2", "value2")]);
+client->Warp.QueryString.add("key", "value");
+client->Warp.QueryString.remove("key");
 ```
 
 ### Form Data
 
 ```reason
- client->Hermes.FormData.set([("key", "value"), ("key2", "value2")]);
- client->Hermes.FormData.add("key", "value");
- client->Hermes.FormData.remove("key");
+ client->Warp.FormData.set([("key", "value"), ("key2", "value2")]);
+ client->Warp.FormData.add("key", "value");
+ client->Warp.FormData.remove("key");
 ```
 
 ### Headers
 
 ```reason
-client->Hermes.Header.set([("key", "value"), ("key2", "value2")]);
-client->Hermes.Header.add("key", "value");
-client->Hermes.Header.remove("key");
+client->Warp.Header.set([("key", "value"), ("key2", "value2")]);
+client->Warp.Header.add("key", "value");
+client->Warp.Header.remove("key");
 ```
 
 ### Handling Responses
@@ -132,7 +132,7 @@ client->Hermes.Header.remove("key");
 The datatype of the response is based on the currently set `ResponseType` (`option(string)` by default).
 
 ```reason
-client->Hermes.onLoad(response => {
+client->Warp.onLoad(response => {
   switch (response) {
   | Ok(Some(data)) => Js.Console.log(data)
   | Ok(None) => Js.Console.info("Response was empty")
@@ -154,31 +154,31 @@ If you want to change the `ResponseType`, you have to do it **before** the `onLo
 | ArrayBuffer  | option(Js.Typed_array.ArrayBuffer.t) |
 
 ```reason
-client->Hermes.ResponseType.setText; // default
-client->Hermes.ResponseType.setJson;
-client->Hermes.ResponseType.setDocument;
-client->Hermes.ResponseType.setArrayBuffer;
+client->Warp.ResponseType.setText; // default
+client->Warp.ResponseType.setJson;
+client->Warp.ResponseType.setDocument;
+client->Warp.ResponseType.setArrayBuffer;
 ```
 
 ### Sending a Request
 
 ```reason
-client->Hermes.send;
+client->Warp.send;
 ```
 
 ### Cancelling Requests
 
-`Hermes.send` returns a function, with which you may cancel the current request. It has a signature of
+`Warp.send` returns a function, with which you may cancel the current request. It has a signature of
 `option(unit => unit)`, so you don't have to do anything when using it inside `React.useEffect`.
 
 ```reason
   /* React */
   React.useEffect(() => {
-    Hermes.Method.get("https://domain.com/")->Hermes.send
+    Warp.Method.get("https://domain.com/")->Warp.send
   });
 
   /* Plain Reason */
-  let maybeCancel = Hermes.Method.get("https://domain.com/")->Hermes.send;
+  let maybeCancel = Warp.Method.get("https://domain.com/")->Warp.send;
   switch(maybeCancel) {
     | Some(cancel) => cancel();
     | None => ();
@@ -188,23 +188,23 @@ client->Hermes.send;
 ### Complete Example
 
 ```reason
-Hermes.Method.get("http://localhost:8081/")
-->Hermes.ResponseType.setJson
-->Hermes.QueryString.set([
+Warp.Method.get("http://localhost:8081/")
+->Warp.ResponseType.setJson
+->Warp.QueryString.set([
     ("firstname", "Max"),
     ("lastname", "Mustermann"),
     ("username", "max"),
     ("email", "max@mustermann.de"),
   ])
-->Hermes.Header.add("authorization", "Bearer 123")
-->Hermes.onLoad(response => {
+->Warp.Header.add("authorization", "Bearer 123")
+->Warp.onLoad(response => {
     switch (response) {
     | Ok(Some(data)) => Js.Console.log(data)
     | Ok(None) => Js.Console.info("No Response!")
     | Error(message) => Js.Console.error(message)
     }
   })
-->Hermes.send;
+->Warp.send;
 ```
 
 ## Credits
