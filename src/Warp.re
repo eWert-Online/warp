@@ -5,36 +5,7 @@ module QueryString = Warp_QueryString;
 module FormData = Warp_FormData;
 module ResponseType = Warp_ResponseType;
 module Types = Warp_Types;
-
-let onLoad:
-  type a.
-    (
-      Types.Client.t(Types.ResponseType.payload(a)),
-      Types.ResponseType.t(a) => unit
-    ) =>
-    Types.Client.t(Types.ResponseType.payload(a)) =
-  (client, callback) => {
-    let eval: type a. Types.ResponseType.payload(a) => a =
-      fun
-      | Types.ResponseType.ArrayBufferResponse(b) => b
-      | Types.ResponseType.DocumentResponse(d) => d
-      | Types.ResponseType.JSONResponse(j) => j
-      | Types.ResponseType.TextResponse(t) => t;
-
-    {
-      ...client,
-      onLoad:
-        Some(
-          data => {
-            switch (data) {
-            | Warp_Types_ResponseType.Ok(data) => callback(Ok(eval(data)))
-            | Warp_Types_ResponseType.Error(message) =>
-              callback(Error(message))
-            }
-          },
-        ),
-    };
-  };
+module Event = Warp_Event;
 
 let send:
   type a.
@@ -80,6 +51,18 @@ let send:
     Belt.List.forEach(client.headers, ((key, value)) => {
       xhr->Warp_XHR.setRequestHeader(key, value)
     });
+
+    switch (client.onProgess) {
+    | Some(onProgress) =>
+      xhr->Warp_XHR.addEventListener(`progress(evt => onProgress(evt)))
+    | None => ()
+    };
+
+    switch (client.onAbort) {
+    | Some(onAbort) =>
+      xhr->Warp_XHR.addEventListener(`abort(_ => onAbort()))
+    | None => ()
+    };
 
     switch (client.onLoad) {
     | Some(onLoad) =>
@@ -137,9 +120,11 @@ let send:
     | None => ()
     };
 
-    if (Js.List.isEmpty(client.formData)) {
-      xhr->Warp_XHR.send;
-    } else {
+    switch (client.method, Js.List.isEmpty(client.formData)) {
+    | (GET, _)
+    | (HEAD, _)
+    | (_, true) => xhr->Warp_XHR.send
+    | (_, false) =>
       xhr->Warp_XHR.setRequestHeader(
         "Content-type",
         "application/x-www-form-urlencoded",

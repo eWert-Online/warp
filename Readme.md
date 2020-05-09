@@ -56,8 +56,8 @@ Please do not use it in production yet.
   - [x] Text `string`
 - [x] Events
   - [x] `onLoad`
-  - [ ] `onProgress`
-  - [ ] `onAbort`
+  - [x] `onProgress`
+  - [x] `onAbort`
 - [x] send
 - [x] abort
 - [ ] async
@@ -127,17 +127,33 @@ client->Warp.Header.add("key", "value");
 client->Warp.Header.remove("key");
 ```
 
-### Handling Responses
+### Events
 
-The datatype of the response is based on the currently set `ResponseType` (`option(string)` by default).
+**onProgress**
 
 ```reason
-client->Warp.onLoad(response => {
+client->Warp.Event.onProgress(_event => {
+  Js.Console.log("We are making progress!")
+});
+```
+
+**onLoad** The datatype of the response is based on the currently set `ResponseType` (`option(string)` by default).
+
+```reason
+client->Warp.Event.onLoad(response => {
   switch (response) {
   | Ok(Some(data)) => Js.Console.log(data)
   | Ok(None) => Js.Console.info("Response was empty")
   | Error(message) => Js.Console.error(message)
   }
+});
+```
+
+**onAbort**
+
+```reason
+client->Warp.Event.onAbort(() => {
+  Js.Console.log("The request got aborted :(")
 });
 ```
 
@@ -197,7 +213,7 @@ Warp.Method.get("http://localhost:8081/")
     ("email", "max@mustermann.de"),
   ])
 ->Warp.Header.add("authorization", "Bearer 123")
-->Warp.onLoad(response => {
+->Warp.Event.onLoad(response => {
     switch (response) {
     | Ok(Some(data)) => Js.Console.log(data)
     | Ok(None) => Js.Console.info("No Response!")

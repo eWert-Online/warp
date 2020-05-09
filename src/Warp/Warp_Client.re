@@ -6,8 +6,10 @@ let make = (~url, ~method) => {
     method,
     queryString: [],
     responseType: Warp_Types_ResponseType.TextResponse(None),
-    onLoad: None,
     formData: [],
     headers: [],
+    onLoad: None,
+    onProgess: None,
+    onAbort: None,
   };
 };
