@@ -33,22 +33,44 @@ let send:
         client.url ++ "?" ++ queryString;
       };
 
-    xhr->Warp_XHR.open_(
-      ~url,
-      ~method=
-        switch (client.method) {
-        | OPTIONS => "OPTIONS"
-        | GET => "GET"
-        | HEAD => "HEAD"
-        | POST => "POST"
-        | PUT => "PUT"
-        | DELETE => "DELETE"
-        | TRACE => "TRACE"
-        | CONNECT => "CONNECT"
-        },
-      ~async=client.async,
-      (),
-    );
+    switch (client.username, client.password) {
+    | (Some(user), Some(password)) =>
+      xhr->Warp_XHR.open_(
+        ~url,
+        ~method=
+          switch (client.method) {
+          | OPTIONS => "OPTIONS"
+          | GET => "GET"
+          | HEAD => "HEAD"
+          | POST => "POST"
+          | PUT => "PUT"
+          | DELETE => "DELETE"
+          | TRACE => "TRACE"
+          | CONNECT => "CONNECT"
+          },
+        ~async=client.async,
+        ~user,
+        ~password,
+        (),
+      )
+    | _ =>
+      xhr->Warp_XHR.open_(
+        ~url,
+        ~method=
+          switch (client.method) {
+          | OPTIONS => "OPTIONS"
+          | GET => "GET"
+          | HEAD => "HEAD"
+          | POST => "POST"
+          | PUT => "PUT"
+          | DELETE => "DELETE"
+          | TRACE => "TRACE"
+          | CONNECT => "CONNECT"
+          },
+        ~async=client.async,
+        (),
+      )
+    };
 
     let _ = xhr->Warp_XHR.setWithCredentials(client.withCredentials);
     let _ = xhr->Warp_XHR.setTimeout(client.timeout);

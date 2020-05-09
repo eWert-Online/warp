@@ -11,3 +11,7 @@ let async = (client, async) => {
 let timeout = (client, timeout) => {
   {...client, timeout};
 };
+
+let auth = (client, username, password) => {
+  {...client, username: Some(username), password: Some(password)};
+};

@@ -67,8 +67,8 @@ Please do not use it in production yet.
 - [x] timeout
 - [x] withCredentials
 - [x] statusCode
+- [x] auth (username / password)
 - [ ] overrideMimeType
-- [ ] auth (username / password)
 - [ ] upload
 
 # How do I install it?
@@ -112,6 +112,7 @@ Warp.Method.connect("https://domain.com/");
 client->Warp.Settings.async(false);
 client->Warp.Settings.timeout(5000);
 client->Warp.Settings.withCredentials(true);
+client->Warp.Settings.auth("user", "password");
 ```
 
 ### Query Strings

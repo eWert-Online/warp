@@ -7,6 +7,8 @@ let make = (~url, ~method) => {
     timeout: 0,
     async: true,
     withCredentials: false,
+    username: None,
+    password: None,
     queryString: [],
     responseType: Warp_Types_ResponseType.TextResponse(None),
     formData: [],

@@ -4,6 +4,8 @@ type t('a) = {
   timeout: int,
   async: bool,
   withCredentials: bool,
+  username: option(string),
+  password: option(string),
   queryString: list((string, string)),
   formData: list((string, string)),
   headers: list((string, string)),
