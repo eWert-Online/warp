@@ -6,6 +6,7 @@ type t('a) = {
   withCredentials: bool,
   username: option(string),
   password: option(string),
+  overrideMimeType: option(string),
   queryString: list((string, string)),
   formData: list((string, string)),
   headers: list((string, string)),

@@ -61,14 +61,14 @@ Please do not use it in production yet.
   - [x] `onLoadWithStatusCode`
   - [x] `onProgress`
   - [x] `onAbort`
+- [x] Settings
+  - [x] async
+  - [x] timeout
+  - [x] withCredentials
+  - [x] auth (username / password)
+  - [x] overrideMimeType
 - [x] send
 - [x] abort
-- [x] async
-- [x] timeout
-- [x] withCredentials
-- [x] statusCode
-- [x] auth (username / password)
-- [ ] overrideMimeType
 - [ ] upload
 
 # How do I install it?
@@ -113,6 +113,7 @@ client->Warp.Settings.async(false);
 client->Warp.Settings.timeout(5000);
 client->Warp.Settings.withCredentials(true);
 client->Warp.Settings.auth("user", "password");
+client->Warp.Settings.overrideMimeType("text/plain");
 ```
 
 ### Query Strings

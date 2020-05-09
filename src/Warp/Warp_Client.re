@@ -9,6 +9,7 @@ let make = (~url, ~method) => {
     withCredentials: false,
     username: None,
     password: None,
+    overrideMimeType: None,
     queryString: [],
     responseType: Warp_Types_ResponseType.TextResponse(None),
     formData: [],

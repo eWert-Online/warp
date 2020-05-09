@@ -15,3 +15,7 @@ let timeout = (client, timeout) => {
 let auth = (client, username, password) => {
   {...client, username: Some(username), password: Some(password)};
 };
+
+let overrideMimeType = (client, mimeType) => {
+  {...client, overrideMimeType: Some(mimeType)};
+};

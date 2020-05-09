@@ -33,47 +33,37 @@ let send:
         client.url ++ "?" ++ queryString;
       };
 
+    let method =
+      switch (client.method) {
+      | OPTIONS => "OPTIONS"
+      | GET => "GET"
+      | HEAD => "HEAD"
+      | POST => "POST"
+      | PUT => "PUT"
+      | DELETE => "DELETE"
+      | TRACE => "TRACE"
+      | CONNECT => "CONNECT"
+      };
+
     switch (client.username, client.password) {
     | (Some(user), Some(password)) =>
       xhr->Warp_XHR.open_(
         ~url,
-        ~method=
-          switch (client.method) {
-          | OPTIONS => "OPTIONS"
-          | GET => "GET"
-          | HEAD => "HEAD"
-          | POST => "POST"
-          | PUT => "PUT"
-          | DELETE => "DELETE"
-          | TRACE => "TRACE"
-          | CONNECT => "CONNECT"
-          },
+        ~method,
         ~async=client.async,
         ~user,
         ~password,
         (),
       )
-    | _ =>
-      xhr->Warp_XHR.open_(
-        ~url,
-        ~method=
-          switch (client.method) {
-          | OPTIONS => "OPTIONS"
-          | GET => "GET"
-          | HEAD => "HEAD"
-          | POST => "POST"
-          | PUT => "PUT"
-          | DELETE => "DELETE"
-          | TRACE => "TRACE"
-          | CONNECT => "CONNECT"
-          },
-        ~async=client.async,
-        (),
-      )
+    | _ => xhr->Warp_XHR.open_(~url, ~method, ~async=client.async, ())
     };
 
     let _ = xhr->Warp_XHR.setWithCredentials(client.withCredentials);
     let _ = xhr->Warp_XHR.setTimeout(client.timeout);
+    switch (client.overrideMimeType) {
+    | Some(mimeType) => xhr->Warp_XHR.overrideMimeType(mimeType)
+    | None => ()
+    };
 
     Belt.List.forEach(client.headers, ((key, value)) => {
       xhr->Warp_XHR.setRequestHeader(key, value)
