@@ -22,12 +22,6 @@ Warp is a Bucklescript library enabling http-requests over XHR.
 
 # What state is it in?
 
-This is still highly experimental and untested.
-
-Please do not use it in production yet.
-
-### TODOs:
-
 - [x] Url
 - [x] Methods
   - [x] OPTIONS
