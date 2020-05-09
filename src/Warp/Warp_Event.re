@@ -30,6 +30,37 @@ let onLoad:
     };
   };
 
+let onLoadWithStatusCode:
+  type a.
+    (
+      Warp_Types_Client.t(Warp_Types_ResponseType.payload(a)),
+      (Warp_Types_ResponseType.t(a), int) => unit
+    ) =>
+    Warp_Types_Client.t(Warp_Types_ResponseType.payload(a)) =
+  (client, callback) => {
+    let eval: type a. Warp_Types_ResponseType.payload(a) => a =
+      fun
+      | Warp_Types_ResponseType.ArrayBufferResponse(b) => b
+      | Warp_Types_ResponseType.DocumentResponse(d) => d
+      | Warp_Types_ResponseType.JSONResponse(j) => j
+      | Warp_Types_ResponseType.TextResponse(t) => t;
+
+    {
+      ...client,
+      onLoadWithStatusCode:
+        Some(
+          (data, statusCode) => {
+            switch (data) {
+            | Warp_Types_ResponseType.Ok(data) =>
+              callback(Ok(eval(data)), statusCode)
+            | Warp_Types_ResponseType.Error(message) =>
+              callback(Error(message), statusCode)
+            }
+          },
+        ),
+    };
+  };
+
 let onProgress = (client, callback) => {
   {...client, onProgess: Some(callback)};
 };

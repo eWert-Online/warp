@@ -115,6 +115,64 @@ let send:
     | None => ()
     };
 
+    switch (client.onLoadWithStatusCode) {
+    | Some(onLoad) =>
+      xhr->Warp_XHR.onError(_ => {
+        onLoad(
+          Types.ResponseType.Error(xhr->Warp_XHR.statusText),
+          xhr->Warp_XHR.status,
+        )
+      });
+      xhr->Warp_XHR.onTimeout(_ => {
+        onLoad(
+          Types.ResponseType.Error(xhr->Warp_XHR.statusText),
+          xhr->Warp_XHR.status,
+        )
+      });
+
+      xhr->Warp_XHR.onLoad(_ => {
+        switch (client.responseType) {
+        | Types.ResponseType.TextResponse(_) =>
+          onLoad(
+            Types.ResponseType.Ok(
+              Types.ResponseType.TextResponse(
+                xhr->Warp_XHR.responseText->Js.Nullable.toOption,
+              ),
+            ),
+            xhr->Warp_XHR.status,
+          )
+        | Types.ResponseType.JSONResponse(_) =>
+          onLoad(
+            Types.ResponseType.Ok(
+              Types.ResponseType.JSONResponse(
+                xhr->Warp_XHR.responseJson->Js.Nullable.toOption,
+              ),
+            ),
+            xhr->Warp_XHR.status,
+          )
+        | Types.ResponseType.DocumentResponse(_) =>
+          onLoad(
+            Types.ResponseType.Ok(
+              Types.ResponseType.DocumentResponse(
+                xhr->Warp_XHR.responseDocument->Js.Nullable.toOption,
+              ),
+            ),
+            xhr->Warp_XHR.status,
+          )
+        | Types.ResponseType.ArrayBufferResponse(_) =>
+          onLoad(
+            Types.ResponseType.Ok(
+              Types.ResponseType.ArrayBufferResponse(
+                xhr->Warp_XHR.responseArrayBuffer->Js.Nullable.toOption,
+              ),
+            ),
+            xhr->Warp_XHR.status,
+          )
+        }
+      });
+    | None => ()
+    };
+
     switch (client.method, Js.List.isEmpty(client.formData)) {
     | (GET, _)
     | (HEAD, _)

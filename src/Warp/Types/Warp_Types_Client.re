@@ -9,6 +9,7 @@ type t('a) = {
   headers: list((string, string)),
   responseType: 'a,
   onLoad: option(Warp_Types_ResponseType.t('a) => unit),
+  onLoadWithStatusCode: option((Warp_Types_ResponseType.t('a), int) => unit),
   onProgess: option(Dom.progressEvent => unit),
   onAbort: option(unit => unit),
 };

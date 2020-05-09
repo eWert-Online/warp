@@ -58,6 +58,7 @@ Please do not use it in production yet.
   - [x] Text `string`
 - [x] Events
   - [x] `onLoad`
+  - [x] `onLoadWithStatusCode`
   - [x] `onProgress`
   - [x] `onAbort`
 - [x] send
@@ -65,10 +66,10 @@ Please do not use it in production yet.
 - [x] async
 - [x] timeout
 - [x] withCredentials
+- [x] statusCode
 - [ ] overrideMimeType
 - [ ] auth (username / password)
 - [ ] upload
-- [ ] statusCode
 
 # How do I install it?
 
@@ -147,7 +148,9 @@ client->Warp.Event.onProgress(_event => {
 });
 ```
 
-**onLoad** The datatype of the response is based on the currently set `ResponseType` (`option(string)` by default).
+**onLoad**
+
+The datatype of the response is based on the currently set `ResponseType` (`option(string)` by default).
 
 ```reason
 client->Warp.Event.onLoad(response => {
@@ -155,6 +158,20 @@ client->Warp.Event.onLoad(response => {
   | Ok(Some(data)) => Js.Console.log(data)
   | Ok(None) => Js.Console.info("Response was empty")
   | Error(message) => Js.Console.error(message)
+  }
+});
+```
+
+**onLoadWithStatusCode**
+
+Same as `onLoad` but gets the requests statusCode as a second argument
+
+```reason
+client->Warp.Event.onLoadWithStatusCode((response, statusCode) => {
+  switch (response) {
+  | Ok(Some(data)) => Js.Console.log2(data, statusCode)
+  | Ok(None) => Js.Console.info2("No Response!", statusCode)
+  | Error(message) => Js.Console.error2(message, statusCode)
   }
 });
 ```

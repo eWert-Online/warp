@@ -12,6 +12,7 @@ let make = (~url, ~method) => {
     formData: [],
     headers: [],
     onLoad: None,
+    onLoadWithStatusCode: None,
     onProgess: None,
     onAbort: None,
   };
