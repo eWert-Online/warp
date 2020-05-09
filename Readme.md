@@ -1,7 +1,13 @@
+# Warp
+
+Warp is a Bucklescript library enabling http-requests over XHR.
+
+If you find a bug or think some feature is missing, don't hesitate to file an issue or even a pull request.
+
+Every little bit of help is very welcome!
+
 # Table of contents
 
-- [What is it?](#what-is-it)
-- [What state is it in?](#what-state-is-it-in)
 - [How do I install it?](#how-do-i-install-it)
 - [API](#api)
   - [Methods](#methods)
@@ -14,56 +20,8 @@
   - [Sending a Request](#sending-a-request)
   - [Cancelling Requests](#cancelling-requests)
   - [Complete Example](#complete-example)
+- [What state is it in?](#what-state-is-it-in)
 - [Credits](#credits)
-
-# What is it?
-
-Warp is a Bucklescript library enabling http-requests over XHR.
-
-# What state is it in?
-
-- [x] Url
-- [x] Methods
-  - [x] OPTIONS
-  - [x] GET
-  - [x] HEAD
-  - [x] POST
-  - [x] PUT
-  - [x] DELETE
-  - [x] TRACE
-  - [x] CONNECT
-- [x] Headers
-  - [x] set
-  - [x] add
-  - [x] delete
-- [x] Query Strings
-  - [x] set
-  - [x] add
-  - [x] delete
-- [x] Form Data / Body
-  - [x] set
-  - [x] add
-  - [x] delete
-- [x] Response Types
-  - [x] ArrayBuffer `Js.Typed_array.ArrayBuffer.t`
-  - [ ] Blob
-  - [x] Document `Dom.document`
-  - [x] Json `Js.Json.t`
-  - [x] Text `string`
-- [x] Events
-  - [x] `onLoad`
-  - [x] `onLoadWithStatusCode`
-  - [x] `onProgress`
-  - [x] `onAbort`
-- [x] Settings
-  - [x] async
-  - [x] timeout
-  - [x] withCredentials
-  - [x] auth (username / password)
-  - [x] overrideMimeType
-- [x] send
-- [x] abort
-- [ ] upload
 
 # How do I install it?
 
@@ -245,6 +203,52 @@ Warp.Method.get("http://localhost:8081/")
   })
 ->Warp.send;
 ```
+
+# What state is it in?
+
+- [x] Url
+- [x] Methods
+  - [x] OPTIONS
+  - [x] GET
+  - [x] HEAD
+  - [x] POST
+  - [x] PUT
+  - [x] DELETE
+  - [x] TRACE
+  - [x] CONNECT
+- [x] Headers
+  - [x] set
+  - [x] add
+  - [x] delete
+- [x] Query Strings
+  - [x] set
+  - [x] add
+  - [x] delete
+- [x] Form Data / Body
+  - [x] set
+  - [x] add
+  - [x] delete
+- [x] Response Types
+  - [x] ArrayBuffer `Js.Typed_array.ArrayBuffer.t`
+  - [ ] Blob
+  - [x] Document `Dom.document`
+  - [x] Json `Js.Json.t`
+  - [x] Text `string`
+- [x] Events
+  - [x] `onLoad`
+  - [x] `onLoadWithStatusCode`
+  - [x] `onProgress`
+  - [x] `onAbort`
+- [x] Settings
+  - [x] async
+  - [x] timeout
+  - [x] withCredentials
+  - [x] auth (username / password)
+  - [x] overrideMimeType
+- [x] send
+- [x] abort
+- [ ] upload
+- [ ] tests
 
 ## Credits
 
