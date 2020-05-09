@@ -5,9 +5,11 @@
 - [How do I install it?](#how-do-i-install-it)
 - [API](#api)
   - [Methods](#methods)
+  - [Settings](#settings)
   - [Query Strings](#query-strings)
   - [Form Data](#form-data)
   - [Headers](#headers)
+  - [Events](#events)
   - [Response Types](#response-types)
   - [Sending a Request](#sending-a-request)
   - [Cancelling Requests](#cancelling-requests)
@@ -60,11 +62,11 @@ Please do not use it in production yet.
   - [x] `onAbort`
 - [x] send
 - [x] abort
-- [ ] async
+- [x] async
+- [x] timeout
+- [x] withCredentials
 - [ ] overrideMimeType
-- [ ] timeout
 - [ ] auth (username / password)
-- [ ] withCredentials
 - [ ] upload
 - [ ] statusCode
 
@@ -101,6 +103,14 @@ Warp.Method.put("https://domain.com/");
 Warp.Method.delete("https://domain.com/");
 Warp.Method.trace("https://domain.com/");
 Warp.Method.connect("https://domain.com/");
+```
+
+### Settings
+
+```reason
+client->Warp.Settings.async(false);
+client->Warp.Settings.timeout(5000);
+client->Warp.Settings.withCredentials(true);
 ```
 
 ### Query Strings

@@ -6,6 +6,7 @@ module FormData = Warp_FormData;
 module ResponseType = Warp_ResponseType;
 module Types = Warp_Types;
 module Event = Warp_Event;
+module Settings = Warp_Settings;
 
 let send:
   type a.
@@ -45,78 +46,72 @@ let send:
         | TRACE => "TRACE"
         | CONNECT => "CONNECT"
         },
+      ~async=client.async,
       (),
     );
+
+    let _ = xhr->Warp_XHR.setWithCredentials(client.withCredentials);
+    let _ = xhr->Warp_XHR.setTimeout(client.timeout);
 
     Belt.List.forEach(client.headers, ((key, value)) => {
       xhr->Warp_XHR.setRequestHeader(key, value)
     });
 
     switch (client.onProgess) {
-    | Some(onProgress) =>
-      xhr->Warp_XHR.addEventListener(`progress(evt => onProgress(evt)))
+    | Some(onProgress) => xhr->Warp_XHR.onProgress(evt => onProgress(evt))
     | None => ()
     };
 
     switch (client.onAbort) {
-    | Some(onAbort) =>
-      xhr->Warp_XHR.addEventListener(`abort(_ => onAbort()))
+    | Some(onAbort) => xhr->Warp_XHR.onAbort(_ => onAbort())
     | None => ()
     };
 
     switch (client.onLoad) {
     | Some(onLoad) =>
-      xhr->Warp_XHR.addEventListener(
-        `error(
-          _ => {onLoad(Types.ResponseType.Error(xhr->Warp_XHR.statusText))},
-        ),
-      );
-      xhr->Warp_XHR.addEventListener(
-        `timeout(
-          _ => {onLoad(Types.ResponseType.Error(xhr->Warp_XHR.statusText))},
-        ),
-      );
+      xhr->Warp_XHR.onError(_ => {
+        onLoad(Types.ResponseType.Error(xhr->Warp_XHR.statusText))
+      });
+      xhr->Warp_XHR.onTimeout(_ => {
+        onLoad(Types.ResponseType.Error(xhr->Warp_XHR.statusText))
+      });
 
-      xhr->Warp_XHR.addEventListener(
-        `load(
-          _ => {
-            switch (client.responseType) {
-            | Types.ResponseType.TextResponse(_) =>
-              onLoad(
-                Types.ResponseType.Ok(
-                  Types.ResponseType.TextResponse(
-                    xhr->Warp_XHR.responseText->Js.Nullable.toOption,
-                  ),
-                ),
-              )
-            | Types.ResponseType.JSONResponse(_) =>
-              onLoad(
-                Types.ResponseType.Ok(
-                  Types.ResponseType.JSONResponse(
-                    xhr->Warp_XHR.responseJson->Js.Nullable.toOption,
-                  ),
-                ),
-              )
-            | Types.ResponseType.DocumentResponse(_) =>
-              onLoad(
-                Types.ResponseType.Ok(
-                  Types.ResponseType.DocumentResponse(
-                    xhr->Warp_XHR.responseDocument->Js.Nullable.toOption,
-                  ),
-                ),
-              )
-            | Types.ResponseType.ArrayBufferResponse(_) =>
-              onLoad(
-                Types.ResponseType.Ok(
-                  Types.ResponseType.ArrayBufferResponse(
-                    xhr->Warp_XHR.responseArrayBuffer->Js.Nullable.toOption,
-                  ),
-                ),
-              )
-            }
-          },
-        ),
-      );
+      xhr->Warp_XHR.onLoad(_ => {
+        switch (client.responseType) {
+        | Types.ResponseType.TextResponse(_) =>
+          onLoad(
+            Types.ResponseType.Ok(
+              Types.ResponseType.TextResponse(
+                xhr->Warp_XHR.responseText->Js.Nullable.toOption,
+              ),
+            ),
+          )
+        | Types.ResponseType.JSONResponse(_) =>
+          onLoad(
+            Types.ResponseType.Ok(
+              Types.ResponseType.JSONResponse(
+                xhr->Warp_XHR.responseJson->Js.Nullable.toOption,
+              ),
+            ),
+          )
+        | Types.ResponseType.DocumentResponse(_) =>
+          onLoad(
+            Types.ResponseType.Ok(
+              Types.ResponseType.DocumentResponse(
+                xhr->Warp_XHR.responseDocument->Js.Nullable.toOption,
+              ),
+            ),
+          )
+        | Types.ResponseType.ArrayBufferResponse(_) =>
+          onLoad(
+            Types.ResponseType.Ok(
+              Types.ResponseType.ArrayBufferResponse(
+                xhr->Warp_XHR.responseArrayBuffer->Js.Nullable.toOption,
+              ),
+            ),
+          )
+        }
+      });
     | None => ()
     };
 
