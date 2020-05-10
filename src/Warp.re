@@ -69,6 +69,17 @@ let send:
       xhr->Warp_XHR.setRequestHeader(key, value)
     });
 
+    switch (client.responseType) {
+    | Types.ResponseType.TextResponse(_) =>
+      xhr->Warp_XHR.setResponseType(`text)->ignore
+    | Types.ResponseType.ArrayBufferResponse(_) =>
+      xhr->Warp_XHR.setResponseType(`arrayBuffer)->ignore
+    | Types.ResponseType.JSONResponse(_) =>
+      xhr->Warp_XHR.setResponseType(`json)->ignore
+    | Types.ResponseType.DocumentResponse(_) =>
+      xhr->Warp_XHR.setResponseType(`document)->ignore
+    };
+
     switch (client.onProgess) {
     | Some(onProgress) => xhr->Warp_XHR.onProgress(evt => onProgress(evt))
     | None => ()
