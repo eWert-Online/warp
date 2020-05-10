@@ -1,7 +1,7 @@
 {
   "name": "@space-labs/warp",
   "description": "Warp is a Bucklescript library enabling http-requests over XHR",
-  "version": "0.0.2",
+  "version": "0.1.2",
   "homepage": "https://github.com/eWert-Online/warp#readme",
   "bugs": "https://github.com/eWert-Online/warp/issues",
   "repository": {
