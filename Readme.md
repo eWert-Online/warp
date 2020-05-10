@@ -17,6 +17,7 @@ Every little bit of help is very welcome!
   - [Headers](#headers)
   - [Events](#events)
   - [Response Types](#response-types)
+  - [Request Types](#request-types)
   - [Sending a Request](#sending-a-request)
   - [Cancelling Requests](#cancelling-requests)
   - [Complete Example](#complete-example)
@@ -157,6 +158,18 @@ client->Warp.ResponseType.setDocument;
 client->Warp.ResponseType.setArrayBuffer;
 ```
 
+### Request Types
+
+| RequestType | Header                              |
+| ----------- | ----------------------------------- |
+| Form        | `application/x-www-form-urlencoded` |
+| Json        | `application/json`                  |
+
+```reason
+client->Warp.RequestType.setForm; // default
+client->Warp.RequestType.setJson;
+```
+
 ### Sending a Request
 
 ```reason
@@ -182,7 +195,9 @@ client->Warp.send;
   };
 ```
 
-### Complete Example
+### Examples
+
+**Basic**
 
 ```reason
 Warp.Method.get("http://localhost:8081/")
@@ -193,6 +208,27 @@ Warp.Method.get("http://localhost:8081/")
     ("username", "max"),
     ("email", "max@mustermann.de"),
   ])
+->Warp.Header.add("authorization", "Bearer 123")
+->Warp.Event.onLoad(response => {
+    switch (response) {
+    | Ok(Some(data)) => Js.Console.log(data)
+    | Ok(None) => Js.Console.info("No Response!")
+    | Error(message) => Js.Console.error(message)
+    }
+  })
+->Warp.send;
+```
+
+**Sending JSON**
+
+```reason
+Warp.Method.post("http://localhost:8081/")
+->Warp.ResponseType.setJson
+->Warp.RequestType.setJson
+->Warp.FormData.set([
+  ("query", ""),
+  ("variables", Js.Json.stringify("")),
+])
 ->Warp.Header.add("authorization", "Bearer 123")
 ->Warp.Event.onLoad(response => {
     switch (response) {

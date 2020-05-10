@@ -4,6 +4,7 @@ module Method = Warp_Method;
 module QueryString = Warp_QueryString;
 module FormData = Warp_FormData;
 module ResponseType = Warp_ResponseType;
+module RequestType = Warp_RequestType;
 module Types = Warp_Types;
 module Event = Warp_Event;
 module Settings = Warp_Settings;
@@ -18,11 +19,6 @@ let send:
       Belt.List.map(client.queryString, ((key, value)) => {
         key ++ "=" ++ value
       })
-      ->Belt.List.toArray
-      ->Js.Array.joinWith("&", _);
-
-    let formData =
-      Belt.List.map(client.formData, ((key, value)) => {key ++ "=" ++ value})
       ->Belt.List.toArray
       ->Js.Array.joinWith("&", _);
 
@@ -201,11 +197,26 @@ let send:
     | (HEAD, _)
     | (_, true) => xhr->Warp_XHR.send
     | (_, false) =>
-      xhr->Warp_XHR.setRequestHeader(
-        "Content-type",
-        "application/x-www-form-urlencoded",
-      );
-      xhr->Warp_XHR.sendString(formData);
+      let data =
+        switch (client.requestType) {
+        | "application/json" =>
+          Js.Dict.fromList(
+            Belt.List.map(client.formData, ((key, value)) =>
+              (key, Js.Json.string(value))
+            ),
+          )
+          ->Js.Json.object_
+          ->Js.Json.stringify
+        | "application/x-www-form-urlencoded" =>
+          Belt.List.map(client.formData, ((key, value)) => {
+            key ++ "=" ++ value
+          })
+          ->Belt.List.toArray
+          ->Js.Array.joinWith("&", _)
+        | _ => ""
+        };
+      xhr->Warp_XHR.setRequestHeader("content-type", client.requestType);
+      xhr->Warp_XHR.sendString(data);
     };
 
     Some(() => {Warp_XHR.abort(xhr)});

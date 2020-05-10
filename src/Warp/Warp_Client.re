@@ -12,6 +12,7 @@ let make = (~url, ~method) => {
     overrideMimeType: None,
     queryString: [],
     responseType: Warp_Types_ResponseType.TextResponse(None),
+    requestType: "application/x-www-form-urlencoded",
     formData: [],
     headers: [],
     onLoad: None,

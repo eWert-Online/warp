@@ -4,6 +4,7 @@ module Method = Warp_Method;
 module QueryString = Warp_QueryString;
 module FormData = Warp_FormData;
 module ResponseType = Warp_ResponseType;
+module RequestType = Warp_RequestType;
 module Types = Warp_Types;
 module Event = Warp_Event;
 module Settings = Warp_Settings;

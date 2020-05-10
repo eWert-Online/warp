@@ -11,6 +11,7 @@ type t('a) = {
   formData: list((string, string)),
   headers: list((string, string)),
   responseType: 'a,
+  requestType: string,
   onLoad: option(Warp_Types_ResponseType.t('a) => unit),
   onLoadWithStatusCode: option((Warp_Types_ResponseType.t('a), int) => unit),
   onProgess: option(Dom.progressEvent => unit),
