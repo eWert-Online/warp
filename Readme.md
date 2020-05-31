@@ -17,7 +17,6 @@ Every little bit of help is very welcome!
   - [Headers](#headers)
   - [Events](#events)
   - [Response Types](#response-types)
-  - [Request Types](#request-types)
   - [Sending a Request](#sending-a-request)
   - [Cancelling Requests](#cancelling-requests)
   - [Complete Example](#complete-example)
@@ -158,18 +157,6 @@ client->Warp.ResponseType.setDocument;
 client->Warp.ResponseType.setArrayBuffer;
 ```
 
-### Request Types
-
-| RequestType | Header                              |
-| ----------- | ----------------------------------- |
-| Form        | `application/x-www-form-urlencoded` |
-| Json        | `application/json`                  |
-
-```reason
-client->Warp.RequestType.setForm; // default
-client->Warp.RequestType.setJson;
-```
-
 ### Sending a Request
 
 ```reason
@@ -222,13 +209,17 @@ Warp.Method.get("http://localhost:8081/")
 **Sending JSON**
 
 ```reason
+let stringifiedJson =
+  Js.Dict.fromList([
+    ("query", Js.Json.string(operation.text)),
+    ("variables", variables),
+  ])
+  ->Js.Json.object_
+  ->Js.Json.stringify;
+
 Warp.Method.post("http://localhost:8081/")
 ->Warp.ResponseType.setJson
-->Warp.RequestType.setJson
-->Warp.FormData.set([
-  ("query", ""),
-  ("variables", Js.Json.stringify("")),
-])
+->Warp.FormData.setJson(stringifiedJson)
 ->Warp.Header.add("authorization", "Bearer 123")
 ->Warp.Event.onLoad(response => {
     switch (response) {
@@ -262,6 +253,7 @@ Warp.Method.post("http://localhost:8081/")
   - [x] delete
 - [x] Form Data / Body
   - [x] set
+  - [x] setJson
   - [x] add
   - [x] delete
 - [x] Response Types
