@@ -1,6 +1,6 @@
 {
   "name": "@space-labs/warp",
-  "version": "0.1.2",
+  "version": "1.0.0",
   "reason": { "react-jsx": 3 },
   "bsc-flags": ["-bs-super-errors"],
   "sources": [
