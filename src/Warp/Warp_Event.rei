@@ -1,14 +1,14 @@
 let onLoad:
   (
     Warp_Types_Client.t(Warp_Types_ResponseType.payload('a)),
-    Warp_Types_ResponseType.t('a) => unit
+    Belt.Result.t('a, string) => unit
   ) =>
   Warp_Types_Client.t(Warp_Types_ResponseType.payload('a));
 
 let onLoadWithStatusCode:
   (
     Warp_Types_Client.t(Warp_Types_ResponseType.payload('a)),
-    (Warp_Types_ResponseType.t('a), int) => unit
+    (Belt.Result.t('a, string), int) => unit
   ) =>
   Warp_Types_Client.t(Warp_Types_ResponseType.payload('a));
 

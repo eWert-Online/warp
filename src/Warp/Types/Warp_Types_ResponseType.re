@@ -4,7 +4,3 @@ type payload('a) =
   | DocumentResponse(option(Dom.document)): payload(option(Dom.document))
   | JSONResponse(option(Js.Json.t)): payload(option(Js.Json.t))
   | TextResponse(option(string)): payload(option(string));
-
-type t('a) =
-  | Error(string)
-  | Ok('a);

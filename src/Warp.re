@@ -80,17 +80,17 @@ let send:
     switch (client.onLoad) {
     | Some(onLoad) =>
       xhr->Warp_XHR.onError(_ => {
-        onLoad(Types.ResponseType.Error(xhr->Warp_XHR.statusText))
+        onLoad(Belt.Result.Error(xhr->Warp_XHR.statusText))
       });
       xhr->Warp_XHR.onTimeout(_ => {
-        onLoad(Types.ResponseType.Error(xhr->Warp_XHR.statusText))
+        onLoad(Belt.Result.Error(xhr->Warp_XHR.statusText))
       });
 
       xhr->Warp_XHR.onLoad(_ => {
         switch (client.responseType) {
         | Types.ResponseType.TextResponse(_) =>
           onLoad(
-            Types.ResponseType.Ok(
+            Belt.Result.Ok(
               Types.ResponseType.TextResponse(
                 xhr->Warp_XHR.responseText->Js.Nullable.toOption,
               ),
@@ -98,7 +98,7 @@ let send:
           )
         | Types.ResponseType.JSONResponse(_) =>
           onLoad(
-            Types.ResponseType.Ok(
+            Belt.Result.Ok(
               Types.ResponseType.JSONResponse(
                 xhr->Warp_XHR.responseJson->Js.Nullable.toOption,
               ),
@@ -106,7 +106,7 @@ let send:
           )
         | Types.ResponseType.DocumentResponse(_) =>
           onLoad(
-            Types.ResponseType.Ok(
+            Belt.Result.Ok(
               Types.ResponseType.DocumentResponse(
                 xhr->Warp_XHR.responseDocument->Js.Nullable.toOption,
               ),
@@ -114,7 +114,7 @@ let send:
           )
         | Types.ResponseType.ArrayBufferResponse(_) =>
           onLoad(
-            Types.ResponseType.Ok(
+            Belt.Result.Ok(
               Types.ResponseType.ArrayBufferResponse(
                 xhr->Warp_XHR.responseArrayBuffer->Js.Nullable.toOption,
               ),
@@ -129,13 +129,13 @@ let send:
     | Some(onLoad) =>
       xhr->Warp_XHR.onError(_ => {
         onLoad(
-          Types.ResponseType.Error(xhr->Warp_XHR.statusText),
+          Belt.Result.Error(xhr->Warp_XHR.statusText),
           xhr->Warp_XHR.status,
         )
       });
       xhr->Warp_XHR.onTimeout(_ => {
         onLoad(
-          Types.ResponseType.Error(xhr->Warp_XHR.statusText),
+          Belt.Result.Error(xhr->Warp_XHR.statusText),
           xhr->Warp_XHR.status,
         )
       });
@@ -144,7 +144,7 @@ let send:
         switch (client.responseType) {
         | Types.ResponseType.TextResponse(_) =>
           onLoad(
-            Types.ResponseType.Ok(
+            Belt.Result.Ok(
               Types.ResponseType.TextResponse(
                 xhr->Warp_XHR.responseText->Js.Nullable.toOption,
               ),
@@ -153,7 +153,7 @@ let send:
           )
         | Types.ResponseType.JSONResponse(_) =>
           onLoad(
-            Types.ResponseType.Ok(
+            Belt.Result.Ok(
               Types.ResponseType.JSONResponse(
                 xhr->Warp_XHR.responseJson->Js.Nullable.toOption,
               ),
@@ -162,7 +162,7 @@ let send:
           )
         | Types.ResponseType.DocumentResponse(_) =>
           onLoad(
-            Types.ResponseType.Ok(
+            Belt.Result.Ok(
               Types.ResponseType.DocumentResponse(
                 xhr->Warp_XHR.responseDocument->Js.Nullable.toOption,
               ),
@@ -171,7 +171,7 @@ let send:
           )
         | Types.ResponseType.ArrayBufferResponse(_) =>
           onLoad(
-            Types.ResponseType.Ok(
+            Belt.Result.Ok(
               Types.ResponseType.ArrayBufferResponse(
                 xhr->Warp_XHR.responseArrayBuffer->Js.Nullable.toOption,
               ),

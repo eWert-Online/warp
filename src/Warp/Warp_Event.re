@@ -4,7 +4,7 @@ let onLoad:
   type a.
     (
       Warp_Types_Client.t(Warp_Types_ResponseType.payload(a)),
-      Warp_Types_ResponseType.t(a) => unit
+      Belt.Result.t(a, string) => unit
     ) =>
     Warp_Types_Client.t(Warp_Types_ResponseType.payload(a)) =
   (client, callback) => {
@@ -21,9 +21,8 @@ let onLoad:
         Some(
           data => {
             switch (data) {
-            | Warp_Types_ResponseType.Ok(data) => callback(Ok(eval(data)))
-            | Warp_Types_ResponseType.Error(message) =>
-              callback(Error(message))
+            | Belt.Result.Ok(data) => callback(Ok(eval(data)))
+            | Belt.Result.Error(message) => callback(Error(message))
             }
           },
         ),
@@ -34,7 +33,7 @@ let onLoadWithStatusCode:
   type a.
     (
       Warp_Types_Client.t(Warp_Types_ResponseType.payload(a)),
-      (Warp_Types_ResponseType.t(a), int) => unit
+      (Belt.Result.t(a, string), int) => unit
     ) =>
     Warp_Types_Client.t(Warp_Types_ResponseType.payload(a)) =
   (client, callback) => {
@@ -51,9 +50,8 @@ let onLoadWithStatusCode:
         Some(
           (data, statusCode) => {
             switch (data) {
-            | Warp_Types_ResponseType.Ok(data) =>
-              callback(Ok(eval(data)), statusCode)
-            | Warp_Types_ResponseType.Error(message) =>
+            | Belt.Result.Ok(data) => callback(Ok(eval(data)), statusCode)
+            | Belt.Result.Error(message) =>
               callback(Error(message), statusCode)
             }
           },

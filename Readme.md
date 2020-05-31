@@ -109,9 +109,9 @@ The datatype of the response is based on the currently set `ResponseType` (`opti
 ```reason
 client->Warp.Event.onLoad(response => {
   switch (response) {
-  | Ok(Some(data)) => Js.Console.log(data)
-  | Ok(None) => Js.Console.info("Response was empty")
-  | Error(message) => Js.Console.error(message)
+  | Belt.Result.Ok(Some(data)) => Js.Console.log(data)
+  | Belt.Result.Ok(None) => Js.Console.info("Response was empty")
+  | Belt.Result.Error(message) => Js.Console.error(message)
   }
 });
 ```
@@ -123,9 +123,9 @@ Same as `onLoad` but gets the requests statusCode as a second argument
 ```reason
 client->Warp.Event.onLoadWithStatusCode((response, statusCode) => {
   switch (response) {
-  | Ok(Some(data)) => Js.Console.log2(data, statusCode)
-  | Ok(None) => Js.Console.info2("No Response!", statusCode)
-  | Error(message) => Js.Console.error2(message, statusCode)
+  | Belt.Result.Ok(Some(data)) => Js.Console.log2(data, statusCode)
+  | Belt.Result.Ok(None) => Js.Console.info2("No Response!", statusCode)
+  | Belt.Result.Error(message) => Js.Console.error2(message, statusCode)
   }
 });
 ```
@@ -198,9 +198,9 @@ Warp.Method.get("http://localhost:8081/")
 ->Warp.Header.add("authorization", "Bearer 123")
 ->Warp.Event.onLoad(response => {
     switch (response) {
-    | Ok(Some(data)) => Js.Console.log(data)
-    | Ok(None) => Js.Console.info("No Response!")
-    | Error(message) => Js.Console.error(message)
+    | Belt.Result.Ok(Some(data)) => Js.Console.log(data)
+    | Belt.Result.Ok(None) => Js.Console.info("No Response!")
+    | Belt.Result.Error(message) => Js.Console.error(message)
     }
   })
 ->Warp.send;
@@ -223,9 +223,9 @@ Warp.Method.post("http://localhost:8081/")
 ->Warp.Header.add("authorization", "Bearer 123")
 ->Warp.Event.onLoad(response => {
     switch (response) {
-    | Ok(Some(data)) => Js.Console.log(data)
-    | Ok(None) => Js.Console.info("No Response!")
-    | Error(message) => Js.Console.error(message)
+    | Belt.Result.Ok(Some(data)) => Js.Console.log(data)
+    | Belt.Result.Ok(None) => Js.Console.info("No Response!")
+    | Belt.Result.Error(message) => Js.Console.error(message)
     }
   })
 ->Warp.send;
