@@ -17,8 +17,18 @@ let decodeReadyState = readyState =>
   | 4 => Done
   | _ => Unknown
   };
+[@bs.val] external window: 'a = "window";
 
 [@bs.new] external make: unit => t = "XMLHttpRequest";
+
+[@bs.new] [@bs.module "xmlhttprequest"] external makeNode: unit => t = "XMLHttpRequest";
+
+let make = () =>
+  if (Js.typeof(window) !== "undefined") {
+    make();
+  } else {
+    makeNode();
+  };
 
 [@bs.get] external readyStateExternal: t => int = "readyState";
 

@@ -25,5 +25,8 @@
   "license": "MIT",
   "devDependencies": {
     "bs-platform": "^7.3.2"
+  },
+  "dependencies": {
+    "xmlhttprequest": "^1.8.0"
   }
 }
